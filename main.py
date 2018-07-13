@@ -7,7 +7,7 @@ def getRoot( path ):
     return xml1.getroot()
 
 def printNode( node, level=None ):
-    # Recursive printing XML nodes with indent
+    # Recursively printing XML nodes with indent
     if level == None:
         level = 0
 
@@ -25,7 +25,7 @@ def printNode( node, level=None ):
         printNode( subnode, level )
 
 def getTagData( node, tagname ):
-    # Receive recursive data from node and it's child with tag named "tagname"
+    # Recursively receive data from node and it's child with tag named "tagname"
     result = []
     if node.tag == tagname:
         result.append( node.text )
@@ -35,10 +35,23 @@ def getTagData( node, tagname ):
 
     return result
 
+def getCountNodesWithAttrib( node, attrname ):
+    # Checking recursively if attrname contains in node attribs
+    counter = 0
+    if attrname in node.attrib.keys():
+        counter = 1
+
+    for subnode in node:
+        counter += getCountNodesWithAttrib( subnode, attrname )
+
+    return counter
+
 def main():
     root = getRoot( "data.xml" )
-    #printNode( root )
+
+    printNode( root )
     print( getTagData( root, "pc_item" ) )
+    print( getCountNodesWithAttrib( root, "name" ) )
 
 if __name__ == "__main__":
     main()
