@@ -38,15 +38,88 @@ def init():
     item_pc4.set( "name", "hard" )
     item_pc4.text = "5000"
 
-    ser = ETree.tostring( data, encoding="utf8", method="xml" ).decode()
+    return data
+
+def serialize( obj ):
+    ser = ETree.tostring( obj, encoding="utf8", method="xml" ).decode()
 
     with open( "data_new.xml", "w" ) as f:
         f.write( ser )
 
 
+def listNodes( root ):
+    result = []
+    for node in root.iter():
+        result.append( node.tag )
+
+    return result;
+
+def getParent( root, node ):
+    for child in root:
+        if child == node:
+            return root
+
+    for child in root:
+        res = getParent( child, node )
+        if res != None:
+            return res
+
+    return None
+
+def deleteNode( parent, node ):
+    # parent = getParent( root, node )
+    node.clear()
+    parent.remove( node )
+
+def deleteTagNodes2( root, tagname ):
+    # problem version, skip element after delete,
+    # so half of elements not deleted
+    for node in root:
+        if node.tag == tagname:
+            deleteNode( root, node )
+        else:
+            deleteTagNodes2( node, tagname )
+
+def deleteTagNodes3( root, tagname ):
+    # problem vesrion, skip element after delete,
+    # so half elements not deleted
+    for node in root.iter():
+        if node.tag == tagname:
+            deleteNode( getParent( root, node ), node )
+
+def deleteTagNodes( root, tagname ):
+    print( "find all in", root.tag, " with tagname ", tagname )
+    toDelete = root.findall( tagname )
+
+    for node in toDelete:
+        print( "delete: ", node.tag, node.text, node.attrib )
+        deleteNode( root, node )
+
+    for node in root:
+        print( "process node", node.tag, node.text )
+        deleteTagNodes( node, tagname )
+
 
 def main():
-    init()
+    data = init()
+    print( "list nodes: ", listNodes( data ) )
+
+    # getting language Java, it's parent is languages
+    lang = getParent( data, data[ 3 ][ 1 ] )
+    print( "\nparent tag: ", lang.tag )
+
+    print( "\nwork version" )
+    deleteTagNodes( data, "pc_item" )
+    print( "list nodes: ", listNodes( data ) )
+
+    print( "\nfail version" )
+    deleteTagNodes2( data, "pc_item" )
+    print( "list nodes: ", listNodes( data ) )
+
+    print( "\nfail version2" )
+    deleteTagNodes3( data, "pc_item" )
+    print( "list nodes: ", listNodes( data ) )
+
 
 if __name__ == "__main__":
     main()
