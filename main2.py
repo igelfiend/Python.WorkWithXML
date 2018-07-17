@@ -5,8 +5,8 @@ import xml.etree.ElementTree as ETree
 def init():
     data = ETree.Element( "data" )
     ETree.SubElement( data, "name" ).text =  "Petya"
-    ETree.SubElement( data, "sex"  ).text = "true"
     ETree.SubElement( data, "age"  ).text = "23"
+    ETree.SubElement( data, "sex"  ).text = "true"
     item_langs = ETree.SubElement( data, "languages" )
     item_pc    = ETree.SubElement( data, "pc" )
 
@@ -88,15 +88,15 @@ def deleteTagNodes3( root, tagname ):
             deleteNode( getParent( root, node ), node )
 
 def deleteTagNodes( root, tagname ):
-    print( "find all in", root.tag, " with tagname ", tagname )
+    #print( "find all in", root.tag, " with tagname ", tagname )
     toDelete = root.findall( tagname )
 
     for node in toDelete:
-        print( "delete: ", node.tag, node.text, node.attrib )
+        #print( "delete: ", node.tag, node.text, node.attrib )
         deleteNode( root, node )
 
     for node in root:
-        print( "process node", node.tag, node.text )
+        #print( "process node", node.tag, node.text )
         deleteTagNodes( node, tagname )
 
 
